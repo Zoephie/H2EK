@@ -1,2 +1,21 @@
-*.agdai
-MAlonzo/**
+*.7z
+*.rar
+*.zip
+/reports/*
+shader_cache/*
+/tags/temp_scenario/*
+/tags/sound_remastered/*
+/tags/reports/*
+# Custom scenarios solo
+/tags/scenarios/solo/*
+!/tags/scenarios/solo/03a_oldmombasa*
+# Custom scenarios multi
+/tags/scenarios/multi/*
+!/tags/scenarios/multi/dangercanyon*
+!/tags/scenarios/multi/cyberdyne_h2*
+
+h2_maps_win64_dx11/*
+
+debug.txt
+memusage.txt
+gamestate.txt
