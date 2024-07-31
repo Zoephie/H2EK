@@ -1,0 +1,75 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_shadow_shadow_apply_combined_2.txt
+;
+sampler2D s1 : register(S1);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 zwriteout : register(c16);
+float4 main(
+    float4 tc1 : TEXCOORD1,
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex0;
+    float4 tex2;
+    float4 tex3;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+    // exp.components=1 term=1
+    // line 9: R0a= D0a
+    float temp0;
+    float temp1;
+    temp1= color0.a;
+    float3 temp2;
+    temp0= temp1;
+    r0.a= temp0;
+    // exp.components=1 term=1 term=1
+    // line 17: R0a= 0 mux T1b
+    float temp3;
+    if (r0.a <= 0.5) {
+    float temp4;
+    temp4= 0;
+    float3 temp5;
+    temp3= temp4;
+    } else {
+    float temp6;
+    temp6= tex1.b;
+    float3 temp7;
+    temp3= temp6;
+    }
+    r0.a= temp3;
+    // exp.components=1 term=1
+    // line 21: SRCCOLOR= 1
+    float temp8;
+    float temp9;
+    temp9= 1;
+    float3 temp10;
+    temp8= temp9;
+    // exp.components=1 term=1
+    // line 22: SRCALPHA= R0a
+    float temp11;
+    float temp12;
+    temp12= r0.a;
+    float3 temp13;
+    temp11= temp12;
+    r0.rgb= temp8;
+    r0.a= temp11;
+// footer for fog zwriteout.
+/*
+    
+    {
+        r0.r = tc7.z / tc7.w;
+    }
+*/
+    return r0;
+
+
+}

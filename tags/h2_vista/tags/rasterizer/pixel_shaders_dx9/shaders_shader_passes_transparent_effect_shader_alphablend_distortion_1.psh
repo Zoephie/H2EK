@@ -1,0 +1,30 @@
+;
+#const C1.a= $distortion_scale
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+float4 distortion_scale : register(C1);  
+float4 main(
+    float4 tc0 : TEXCOORD0,
+    float4 tc1 : TEXCOORD1,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    float4 bump= tex2Dproj(s0, tc0);
+
+	float real_scale = distortion_scale.a / 64.0; 
+    
+    float2 tc_2d_bumpenv1;
+
+    tc_2d_bumpenv1.r= tc1.r + real_scale * bump.r;
+    tc_2d_bumpenv1.g= tc1.g + real_scale * bump.g;
+
+    float4 distortion= tex2D(s1, tc_2d_bumpenv1);
+
+	float4 color_out;
+	
+    color_out.rgb= distortion.rgb * color1.rgb;
+	color_out.a = color1.a;
+
+    return color_out;
+}

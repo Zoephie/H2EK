@@ -1,0 +1,109 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_self_illumination_default_self_illumination_single_pass_zwrite_0.txt
+;
+#const C1.rgb= $self_illum_color
+sampler2D s0 : register(S0);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex1;
+    float4 tex2;
+    float4 tex3;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+    // exp.components=3 term=3
+    // line 10: R0= T0*C0
+    float3 temp0;
+    float3 temp1;
+    temp1= saturate(tex0.rgb);
+    float3 temp2;
+    float3 temp3;
+    temp3= c1.rgb;
+    float3 temp4;
+    float3 temp5;
+    temp5= temp1 * temp3;
+    temp0= temp5;
+    r0.rgb= temp0;
+    // exp.components=1 term=1
+    // line 12: R1= R0.R0
+    float temp6;
+    float3 temp7;
+    temp7= saturate(r0.rgb);
+    float3 temp8;
+    float3 temp9;
+    temp9= saturate(r0.rgb);
+    float3 temp10;
+    float temp11;
+    temp11= dot(temp7, temp9);
+    temp6= temp11;
+    r1.rgb= temp6;
+    // exp.components=3 term=3
+    // line 14: SRCCOLOR= R0
+    float3 temp12;
+    float3 temp13;
+    temp13= saturate(r0.rgb);
+    float3 temp14;
+    temp12= temp13;
+    // exp.components=1 term=1
+    // line 15: SRCALPHA= R1b
+    float temp15;
+    float temp16;
+    temp16= saturate(r1.b);
+    float3 temp17;
+    temp15= temp16;
+    r0.rgb= temp12;
+    r0.a= temp15;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}

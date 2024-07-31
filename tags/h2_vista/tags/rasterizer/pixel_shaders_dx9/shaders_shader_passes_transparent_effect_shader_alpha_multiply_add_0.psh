@@ -1,0 +1,169 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_transparent_effect_shader_alpha_multiply_add_0.txt
+;
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex2;
+    float4 tex3;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+    // exp.components=1 term=1 term=1
+    // line 10: T0a= INVERT(D0a)*T0a + D0a*T1a
+    float temp0;
+    float temp1;
+    float temp2;
+    float temp3;
+    temp3= 1-saturate(color0.a);
+    float3 temp4;
+    float temp5;
+    temp5= saturate(tex0.a);
+    float3 temp6;
+    float temp7;
+    temp7= temp3 * temp5;
+    temp1= temp7;
+    float temp8;
+    temp8= saturate(color0.a);
+    float3 temp9;
+    float temp10;
+    temp10= saturate(tex1.a);
+    float3 temp11;
+    float temp12;
+    temp12= temp8 * temp10;
+    temp2= temp12;
+    temp0= temp1 + temp2;
+    // exp.components=3 term=3 term=3
+    // line 11: T0= INVERT(D0a)*T0 + D0a*T1
+    float3 temp13;
+    float3 temp14;
+    float3 temp15;
+    float temp16;
+    temp16= 1-saturate(color0.a);
+    float3 temp17;
+    float3 temp18;
+    temp18= saturate(tex0.rgb);
+    float3 temp19;
+    float3 temp20;
+    temp20= temp16 * temp18;
+    temp14= temp20;
+    float temp21;
+    temp21= saturate(color0.a);
+    float3 temp22;
+    float3 temp23;
+    temp23= saturate(tex1.rgb);
+    float3 temp24;
+    float3 temp25;
+    temp25= temp21 * temp23;
+    temp15= temp25;
+    temp13= temp14 + temp15;
+    tex0.a= temp0;
+    tex0.rgb= temp13;
+    // exp.components=3 term=3
+    // line 13: T0= T0*D1
+    float3 temp26;
+    float3 temp27;
+    temp27= saturate(tex0.rgb);
+    float3 temp28;
+    float3 temp29;
+    temp29= saturate(color1.rgb);
+    float3 temp30;
+    float3 temp31;
+    temp31= temp27 * temp29;
+    temp26= temp31;
+    // exp.components=1 term=1
+    // line 14: T0a= T0a*D1a
+    float temp32;
+    float temp33;
+    temp33= saturate(tex0.a);
+    float3 temp34;
+    float temp35;
+    temp35= saturate(color1.a);
+    float3 temp36;
+    float temp37;
+    temp37= temp33 * temp35;
+    temp32= temp37;
+    tex0.rgb= temp26;
+    tex0.a= temp32;
+    // exp.components=3 term=3
+    // line 16: SRCCOLOR= T0*D1a
+    float3 temp38;
+    float3 temp39;
+    temp39= saturate(tex0.rgb);
+    float3 temp40;
+    float temp41;
+    temp41= saturate(color1.a);
+    float3 temp42;
+    float3 temp43;
+    temp43= temp39 * temp41;
+    temp38= temp43;
+    // exp.components=1 term=1
+    // line 17: SRCALPHA= T0a
+    float temp44;
+    float temp45;
+    temp45= saturate(tex0.a);
+    float3 temp46;
+    temp44= temp45;
+    r0.rgb= temp38;
+    r0.a= temp44;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}

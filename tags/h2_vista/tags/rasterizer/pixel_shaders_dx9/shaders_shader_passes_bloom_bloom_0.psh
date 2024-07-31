@@ -1,0 +1,96 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_bloom_bloom_0.txt
+;
+#const C1.a= $bloom
+sampler2D s1 : register(S1);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex0;
+    float4 tex2;
+    float4 tex3;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+    // exp.components=1 term=1
+    // line 12: R0a= T1b*C0a
+    float temp0;
+    float temp1;
+    temp1= saturate(tex1.b);
+    float3 temp2;
+    float temp3;
+    temp3= c1.a;
+    float3 temp4;
+    float temp5;
+    temp5= temp1 * temp3;
+    temp0= temp5;
+    r0.a= temp0;
+    // exp.components=1 term=1
+    // line 14: SRCCOLOR= 0
+    float temp6;
+    float temp7;
+    temp7= 0;
+    float3 temp8;
+    temp6= temp7;
+    // exp.components=1 term=1
+    // line 15: SRCALPHA= R0a
+    float temp9;
+    float temp10;
+    temp10= saturate(r0.a);
+    float3 temp11;
+    temp9= temp10;
+    r0.rgb= temp6;
+    r0.a= temp9;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}

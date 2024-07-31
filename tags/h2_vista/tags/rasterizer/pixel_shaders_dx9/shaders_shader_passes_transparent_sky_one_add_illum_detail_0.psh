@@ -1,0 +1,116 @@
+; compiled from source\rasterizer\dx9\pixel_shaders_dx9\shaders_shader_passes_transparent_one_add_illum_detail_0.txt
+;
+#const C1.rgb= $self_illum_color
+samplerCUBE s0 : register(S0);
+sampler2D s1 : register(S1);
+sampler2D s2 : register(S2);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 zwriteout : register(c16);
+float4 main(
+    float3 tc0 : TEXCOORD0,
+    float2 tc1 : TEXCOORD1,
+    float2 tc2 : TEXCOORD2,
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex3;
+// texture stage 0 mode 2 dot 0 input-stage 0
+    float4 tex0= texCUBE(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2D(s1, tc1);
+// texture stage 2 mode 0 dot 0 input-stage 0
+    float4 tex2= tex2D(s2, tc2);
+    // exp.components=3 term=3
+    // line 14: R0= T1*C0
+    float3 temp0;
+    float3 temp1;
+    temp1= tex1.rgb;
+    float3 temp2;
+    float3 temp3;
+    temp3= c1.rgb;
+    float3 temp4;
+    float3 temp5;
+    temp5= temp1 * temp3;
+    temp0= temp5;
+    // exp.components=1 term=1
+    // line 15: T1a= T1a*D0a
+    float temp6;
+    float temp7;
+    temp7= tex1.a;
+    float3 temp8;
+    float temp9;
+    temp9= color0.a;
+    float3 temp10;
+    float temp11;
+    temp11= temp7 * temp9;
+    temp6= temp11;
+    r0.rgb= temp0;
+    tex1.a= temp6;
+    // exp.components=3 term=3
+    // line 17: R0= R0*T1a
+    float3 temp12;
+    float3 temp13;
+    temp13= r0.rgb;
+    float3 temp14;
+    float temp15;
+    temp15= tex1.a;
+    float3 temp16;
+    float3 temp17;
+    temp17= temp13 * temp15;
+    temp12= temp17;
+    r0.rgb= temp12;
+    // exp.components=3 term=3
+    // line 19: R0= OUT_SCALE_BY_2(R0*T2)
+    float3 temp18;
+    float3 temp19;
+    temp19= r0.rgb;
+    float3 temp20;
+    float3 temp21;
+    temp21= tex2.rgb;
+    float3 temp22;
+    float3 temp23;
+    temp23= temp19 * temp21;
+    temp18= temp23;
+    temp18= 2 * temp18;
+    r0.rgb= temp18;
+    // exp.components=3 term=3
+    // line 21: SRCCOLOR= R0*D0
+    float3 temp24;
+    float3 temp25;
+    temp25= r0.rgb;
+    float3 temp26;
+    float3 temp27;
+    temp27= color0.rgb;
+    float3 temp28;
+    float3 temp29;
+    temp29= temp25 * temp27;
+    temp24= temp29;
+    // exp.components=1 term=1
+    // line 22: SRCALPHA= T1a
+    float temp30;
+    float temp31;
+    temp31= tex1.a;
+    float3 temp32;
+    temp30= temp31;
+    r0.rgb= temp24;
+    r0.a= temp30;
+// footer for fog zwriteout.
+
+    
+    {
+#ifdef ZPRIME
+		float linear_depth = tc7.w / zwriteout.z;
+    r0.r = floor(linear_depth*256)/256; r0.g = frac(floor(linear_depth*65536)/256); r0.b = frac(floor(linear_depth*65536*256)/256);
+#endif
+    }
+    return r0;
+
+
+}

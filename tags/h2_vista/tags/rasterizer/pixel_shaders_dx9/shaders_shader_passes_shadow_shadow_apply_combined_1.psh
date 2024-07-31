@@ -1,0 +1,52 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_shadow_shadow_apply_combined_1.txt
+;
+#const C2.a= $shadow_fade
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 zwriteout : register(c16);
+float4 main(
+    float4 tc[3] : TEXCOORD0,
+    float4 tc3 : TEXCOORD3,
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+
+    float4 tex3= tex2Dproj(s1, tc3);
+// footer for fog zwriteout.
+
+    r0 = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        float depth = tex2Dproj(s0, tc[i]);
+        if (tc[i].b/tc[i].a < depth)
+            r0 += 1.0f;
+        else
+            r0 += 0.0f;
+    }
+    r0 /= 3;
+    
+    r0 = c2.a * r0 + (1-c2.a);
+
+    r0 *= tex3.bbbb;
+//    r0 = tex0.rrrr;
+    if (color0.a <= 0.5) {
+        r0 = 0;
+    }
+
+    return r0; 
+
+
+}

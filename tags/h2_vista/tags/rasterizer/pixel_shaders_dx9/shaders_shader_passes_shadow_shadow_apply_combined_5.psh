@@ -1,0 +1,57 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_shadow_shadow_apply_combined_5.txt
+;
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 zwriteout : register(c16);
+float4 main(
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex0;
+    float4 tex1;
+    float4 tex2;
+    float4 tex3;
+    float4 tex4;
+    float4 tex5;
+    float4 tex6;
+    float4 tex7;
+    // exp.components=1 term=1
+    // line 9: R0= 0
+    float temp0;
+    float temp1;
+    temp1= 0;
+    float3 temp2;
+    temp0= temp1;
+    r0.rgb= temp0;
+    // exp.components=1 term=1
+    // line 11: SRCCOLOR= 0
+    float temp3;
+    float temp4;
+    temp4= 0;
+    float3 temp5;
+    temp3= temp4;
+    // exp.components=1 term=1
+    // line 12: SRCALPHA= 1
+    float temp6;
+    float temp7;
+    temp7= 1;
+    float3 temp8;
+    temp6= temp7;
+    r0.rgb= temp3;
+    r0.a= temp6;
+// footer for fog zwriteout.
+/*
+    
+    {
+        r0.r = tc7.z / tc7.w;
+    }
+*/
+    return r0;
+
+
+}

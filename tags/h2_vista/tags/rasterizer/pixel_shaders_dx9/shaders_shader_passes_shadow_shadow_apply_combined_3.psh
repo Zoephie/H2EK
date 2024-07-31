@@ -1,0 +1,26 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_shadow_shadow_apply_combined_3.txt
+;
+#const C1.a= $lightmap_shadow_fade
+#const C2.a= $lightmap_shadow_darkening
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 zwriteout : register(c16);
+float4 main(
+    float4 tc0 : TEXCOORD0,
+    float4 tc1 : TEXCOORD1,
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+	float4 r0;
+// we want to know if this is ever run, so PINK!
+     r0 = float4(1.0f, 0.7f, 0.7f, 1.0f);
+   
+     return r0;
+
+
+}

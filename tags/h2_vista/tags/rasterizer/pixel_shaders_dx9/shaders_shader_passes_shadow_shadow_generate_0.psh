@@ -1,0 +1,14 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_shadow_shadow_generate_0.txt
+;
+sampler2D s7 : register(S7);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 zwriteout : register(c16);
+float4 main(
+    float4 tc7 : TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+) : COLOR
+{
+    return float4(0,0,0,1); 
+
+}

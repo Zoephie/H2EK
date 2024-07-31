@@ -1,0 +1,1938 @@
+; compiled from tags\rasterizer\pixel_shaders_dx9\shaders_shader_passes_lightmap_lightmap_tex_detail_blend_specular_1.txt
+;
+#const C1.rgb= $diffuse_color
+#const C2.rgb= $diffuse_color_offset
+#const C3.a= $lightmap_specular_brightness
+#const C5.rgb= $specular_color
+#case $lightmap_type=0
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+sampler2D s2 : register(S2);
+samplerCUBE s3 : register(S3);
+sampler2D s4 : register(S4);
+sampler2D s5 : register(S5);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 c3 : register(C3);
+float4 c4 : register(C4);
+float4 c5 : register(C5);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+#ifdef CENTROID2
+    float4 tc2 : TEXCOORD2_centroid,
+#else
+    float4 tc2 : TEXCOORD2,
+#endif
+#ifdef CENTROID3
+    float4 tc3 : TEXCOORD3_centroid,
+#else
+    float4 tc3 : TEXCOORD3,
+#endif
+#ifdef CENTROID4
+    float4 tc4 : TEXCOORD4_centroid,
+#else
+    float4 tc4 : TEXCOORD4,
+#endif
+#ifdef CENTROID5
+    float4 tc5 : TEXCOORD5_centroid,
+#else
+    float4 tc5 : TEXCOORD5,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+// texture stage 2 mode 0 dot 0 input-stage 0
+    float4 tex2= tex2Dproj(s2, tc2);
+// texture stage 3 mode 2 dot 0 input-stage 0
+    float4 tex3= texCUBE(s3, tc3);
+// texture stage 4 mode 0 dot 0 input-stage 0
+    float4 tex4= tex2Dproj(s4, tc4);
+// texture stage 5 mode 0 dot 0 input-stage 0
+    float4 tex5= tex2Dproj(s5, tc5);
+    // exp.components=3 term=3 term=3
+    // line 27: R0= INVERT(T0a)*T1 + T0a*T4
+    float3 temp0;
+    float3 temp1;
+    float3 temp2;
+    float temp3;
+    temp3= 1-saturate(tex0.a);
+    float3 temp4;
+    float3 temp5;
+    temp5= saturate(tex1.rgb);
+    float3 temp6;
+    float3 temp7;
+    temp7= temp3 * temp5;
+    temp1= temp7;
+    float temp8;
+    temp8= saturate(tex0.a);
+    float3 temp9;
+    float3 temp10;
+    temp10= saturate(tex4.rgb);
+    float3 temp11;
+    float3 temp12;
+    temp12= temp8 * temp10;
+    temp2= temp12;
+    temp0= temp1 + temp2;
+    // exp.components=1 term=1 term=1
+    // line 28: R0a= INVERT(T0a)*T1a + T0a*T4a
+    float temp13;
+    float temp14;
+    float temp15;
+    float temp16;
+    temp16= 1-saturate(tex0.a);
+    float3 temp17;
+    float temp18;
+    temp18= saturate(tex1.a);
+    float3 temp19;
+    float temp20;
+    temp20= temp16 * temp18;
+    temp14= temp20;
+    float temp21;
+    temp21= saturate(tex0.a);
+    float3 temp22;
+    float temp23;
+    temp23= saturate(tex4.a);
+    float3 temp24;
+    float temp25;
+    temp25= temp21 * temp23;
+    temp15= temp25;
+    temp13= temp14 + temp15;
+    r0.rgb= temp0;
+    r0.a= temp13;
+    // exp.components=3 term=3
+    // line 30: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp26;
+    float3 temp27;
+    temp27= saturate(r0.rgb);
+    float3 temp28;
+    float3 temp29;
+    temp29= saturate(tex0.rgb);
+    float3 temp30;
+    float3 temp31;
+    temp31= temp27 * temp29;
+    temp26= temp31;
+    temp26= 2 * temp26;
+    r0.rgb= temp26;
+    // exp.components=3 term=3 term=3
+    // line 34: T0= R0*C0 + C1
+    float3 temp32;
+    float3 temp33;
+    float3 temp34;
+    float3 temp35;
+    temp35= saturate(r0.rgb);
+    float3 temp36;
+    float3 temp37;
+    temp37= c1.rgb;
+    float3 temp38;
+    float3 temp39;
+    temp39= temp35 * temp37;
+    temp33= temp39;
+    float3 temp40;
+    temp40= c2.rgb;
+    float3 temp41;
+    temp34= temp40;
+    temp32= temp33 + temp34;
+    // exp.components=1 term=1
+    // line 35: T0a= T5a
+    float temp42;
+    float temp43;
+    temp43= saturate(tex5.a);
+    float3 temp44;
+    temp42= temp43;
+    tex0.rgb= temp32;
+    tex0.a= temp42;
+    // exp.components=1 term=1
+    // line 37: R0= EXPAND(T2).EXPAND(T3)
+    float temp45;
+    float3 temp46;
+    temp46= 2 * saturate(tex2.rgb) - 1;
+    float3 temp47;
+    float3 temp48;
+    temp48= 2 * saturate(tex3.rgb) - 1;
+    float3 temp49;
+    float temp50;
+    temp50= dot(temp46, temp48);
+    temp45= temp50;
+    // exp.components=1 term=1
+    // line 38: T2= EXPAND(T2).EXPAND(D0)
+    float temp51;
+    float3 temp52;
+    temp52= 2 * saturate(tex2.rgb) - 1;
+    float3 temp53;
+    float3 temp54;
+    temp54= 2 * saturate(color0.rgb) - 1;
+    float3 temp55;
+    float temp56;
+    temp56= dot(temp52, temp54);
+    temp51= temp56;
+    // exp.components=1 term=1
+    // line 39: R0a= EXPAND(T3b)
+    float temp57;
+    float temp58;
+    temp58= 2 * saturate(tex3.b) - 1;
+    float3 temp59;
+    temp57= temp58;
+    // exp.components=1 term=1
+    // line 40: T1a= EXPAND(D1a)*T0a
+    float temp60;
+    float temp61;
+    temp61= 2 * saturate(color1.a) - 1;
+    float3 temp62;
+    float temp63;
+    temp63= saturate(tex0.a);
+    float3 temp64;
+    float temp65;
+    temp65= temp61 * temp63;
+    temp60= temp65;
+    r0.rgb= temp45;
+    tex2.rgb= temp51;
+    r0.a= temp57;
+    tex1.a= temp60;
+    // exp.components=1 term=1
+    // line 43: R1= EXPAND(T3).EXPAND(D0)
+    float temp66;
+    float3 temp67;
+    temp67= 2 * saturate(tex3.rgb) - 1;
+    float3 temp68;
+    float3 temp69;
+    temp69= 2 * saturate(color0.rgb) - 1;
+    float3 temp70;
+    float temp71;
+    temp71= dot(temp67, temp69);
+    temp66= temp71;
+    // exp.components=1 term=1 term=1
+    // line 44: D1a= D1a*SIGNED(R0b) - D1a*SIGNED(R0a)
+    float temp72;
+    float temp73;
+    float temp74;
+    float temp75;
+    temp75= saturate(color1.a);
+    float3 temp76;
+    float temp77;
+    temp77= r0.b;
+    float3 temp78;
+    float temp79;
+    temp79= temp75 * temp77;
+    temp73= temp79;
+    float temp80;
+    temp80= saturate(color1.a);
+    float3 temp81;
+    float temp82;
+    temp82= r0.a;
+    float3 temp83;
+    float temp84;
+    temp84= temp80 * temp82;
+    temp74= temp84;
+    temp72= temp73 - temp74;
+    r1.rgb= temp66;
+    color1.a= temp72;
+    // exp.components=1 term=1 term=1
+    // line 47: R1a= OUT_SCALE_BY_2(SIGNED(R0b)*SIGNED(T2b) - 1/2*SIGNED(R1b))
+    float temp85;
+    float temp86;
+    float temp87;
+    float temp88;
+    temp88= r0.b;
+    float3 temp89;
+    float temp90;
+    temp90= tex2.b;
+    float3 temp91;
+    float temp92;
+    temp92= temp88 * temp90;
+    temp86= temp92;
+    float temp93;
+    temp93= 0.5;
+    float3 temp94;
+    float temp95;
+    temp95= r1.b;
+    float3 temp96;
+    float temp97;
+    temp97= temp93 * temp95;
+    temp87= temp97;
+    temp85= temp86 - temp87;
+    temp85= 2 * temp85;
+    r1.a= temp85;
+    // exp.components=3 term=3 term=3
+    // line 50: R0= D1 + D1*SIGNED(D1a)
+    float3 temp98;
+    float3 temp99;
+    float3 temp100;
+    float3 temp101;
+    temp101= saturate(color1.rgb);
+    float3 temp102;
+    temp99= temp101;
+    float3 temp103;
+    temp103= saturate(color1.rgb);
+    float3 temp104;
+    float temp105;
+    temp105= color1.a;
+    float3 temp106;
+    float3 temp107;
+    temp107= temp103 * temp105;
+    temp100= temp107;
+    temp98= temp99 + temp100;
+    r0.rgb= temp98;
+    // exp.components=1 term=1
+    // line 54: R1= R0.C1a
+    float temp108;
+    float3 temp109;
+    temp109= saturate(r0.rgb);
+    float3 temp110;
+    float temp111;
+    temp111= 0.752941;
+    float3 temp112;
+    float temp113;
+    temp113= dot(temp109, temp111);
+    temp108= temp113;
+    // exp.components=1 term=1
+    // line 55: D1a= R1a*R1a
+    float temp114;
+    float temp115;
+    temp115= saturate(r1.a);
+    float3 temp116;
+    float temp117;
+    temp117= saturate(r1.a);
+    float3 temp118;
+    float temp119;
+    temp119= temp115 * temp117;
+    temp114= temp119;
+    // exp.components=1 term=1
+    // line 56: T1a= C0a*T0a
+    float temp120;
+    float temp121;
+    temp121= c3.a;
+    float3 temp122;
+    float temp123;
+    temp123= saturate(tex0.a);
+    float3 temp124;
+    float temp125;
+    temp125= temp121 * temp123;
+    temp120= temp125;
+    r1.rgb= temp108;
+    color1.a= temp114;
+    tex1.a= temp120;
+    // exp.components=3 term=3
+    // line 60: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp126;
+    float3 temp127;
+    temp127= saturate(r0.rgb);
+    float3 temp128;
+    float3 temp129;
+    temp129= saturate(tex0.rgb);
+    float3 temp130;
+    float3 temp131;
+    temp131= temp127 * temp129;
+    temp126= temp131;
+    temp126= 2 * temp126;
+    // exp.components=3 term=3
+    // line 61: D1= OUT_SCALE_BY_2(C0*D1)
+    float3 temp132;
+    float3 temp133;
+    temp133= c5.rgb;
+    float3 temp134;
+    float3 temp135;
+    temp135= saturate(color1.rgb);
+    float3 temp136;
+    float3 temp137;
+    temp137= temp133 * temp135;
+    temp132= temp137;
+    temp132= 2 * temp132;
+    // exp.components=1 term=1
+    // line 62: R1a= D1a*D1a
+    float temp138;
+    float temp139;
+    temp139= saturate(color1.a);
+    float3 temp140;
+    float temp141;
+    temp141= saturate(color1.a);
+    float3 temp142;
+    float temp143;
+    temp143= temp139 * temp141;
+    temp138= temp143;
+    r0.rgb= temp126;
+    color1.rgb= temp132;
+    r1.a= temp138;
+    // exp.components=1 term=1
+    // line 67: D1= 0
+    float temp144;
+    float temp145;
+    temp145= 0;
+    float3 temp146;
+    temp144= temp145;
+    // exp.components=1 term=1
+    // line 68: R1a= 0
+    float temp147;
+    float temp148;
+    temp148= 0;
+    float3 temp149;
+    temp147= temp148;
+    color1.rgb= temp144;
+    r1.a= temp147;
+    // exp.components=3 term=3
+    // line 84: D1= OUT_SCALE_BY_2(R1a*D1)
+    float3 temp150;
+    float temp151;
+    temp151= saturate(r1.a);
+    float3 temp152;
+    float3 temp153;
+    temp153= saturate(color1.rgb);
+    float3 temp154;
+    float3 temp155;
+    temp155= temp151 * temp153;
+    temp150= temp155;
+    temp150= 2 * temp150;
+    // exp.components=1 term=1
+    // line 85: D0a= OUT_SCALE_BY_2(R1b*T0a)
+    float temp156;
+    float temp157;
+    temp157= saturate(r1.b);
+    float3 temp158;
+    float temp159;
+    temp159= saturate(tex0.a);
+    float3 temp160;
+    float temp161;
+    temp161= temp157 * temp159;
+    temp156= temp161;
+    temp156= 2 * temp156;
+    color1.rgb= temp150;
+    color0.a= temp156;
+    // exp.components=3 term=3 term=3
+    // line 88: SRCCOLOR= D1 + R0
+    float3 temp162;
+    float3 temp163;
+    float3 temp164;
+    float3 temp165;
+    temp165= saturate(color1.rgb);
+    float3 temp166;
+    temp163= temp165;
+    float3 temp167;
+    temp167= saturate(r0.rgb);
+    float3 temp168;
+    temp164= temp167;
+    temp162= temp163 + temp164;
+    // exp.components=1 term=1
+    // line 89: SRCALPHA= D0a
+    float temp169;
+    float temp170;
+    temp170= saturate(color0.a);
+    float3 temp171;
+    temp169= temp170;
+    r0.rgb= temp162;
+    r0.a= temp169;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}
+#case $lightmap_type=1
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+sampler2D s2 : register(S2);
+samplerCUBE s3 : register(S3);
+sampler2D s4 : register(S4);
+sampler2D s5 : register(S5);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 c3 : register(C3);
+float4 c4 : register(C4);
+float4 c5 : register(C5);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+#ifdef CENTROID2
+    float4 tc2 : TEXCOORD2_centroid,
+#else
+    float4 tc2 : TEXCOORD2,
+#endif
+#ifdef CENTROID3
+    float4 tc3 : TEXCOORD3_centroid,
+#else
+    float4 tc3 : TEXCOORD3,
+#endif
+#ifdef CENTROID4
+    float4 tc4 : TEXCOORD4_centroid,
+#else
+    float4 tc4 : TEXCOORD4,
+#endif
+#ifdef CENTROID5
+    float4 tc5 : TEXCOORD5_centroid,
+#else
+    float4 tc5 : TEXCOORD5,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+// texture stage 2 mode 0 dot 0 input-stage 0
+    float4 tex2= tex2Dproj(s2, tc2);
+// texture stage 3 mode 2 dot 0 input-stage 0
+    float4 tex3= texCUBE(s3, tc3);
+// texture stage 4 mode 0 dot 0 input-stage 0
+    float4 tex4= tex2Dproj(s4, tc4);
+// texture stage 5 mode 0 dot 0 input-stage 0
+    float4 tex5= tex2Dproj(s5, tc5);
+    // exp.components=3 term=3 term=3
+    // line 27: R0= INVERT(T0a)*T1 + T0a*T4
+    float3 temp0;
+    float3 temp1;
+    float3 temp2;
+    float temp3;
+    temp3= 1-saturate(tex0.a);
+    float3 temp4;
+    float3 temp5;
+    temp5= saturate(tex1.rgb);
+    float3 temp6;
+    float3 temp7;
+    temp7= temp3 * temp5;
+    temp1= temp7;
+    float temp8;
+    temp8= saturate(tex0.a);
+    float3 temp9;
+    float3 temp10;
+    temp10= saturate(tex4.rgb);
+    float3 temp11;
+    float3 temp12;
+    temp12= temp8 * temp10;
+    temp2= temp12;
+    temp0= temp1 + temp2;
+    // exp.components=1 term=1 term=1
+    // line 28: R0a= INVERT(T0a)*T1a + T0a*T4a
+    float temp13;
+    float temp14;
+    float temp15;
+    float temp16;
+    temp16= 1-saturate(tex0.a);
+    float3 temp17;
+    float temp18;
+    temp18= saturate(tex1.a);
+    float3 temp19;
+    float temp20;
+    temp20= temp16 * temp18;
+    temp14= temp20;
+    float temp21;
+    temp21= saturate(tex0.a);
+    float3 temp22;
+    float temp23;
+    temp23= saturate(tex4.a);
+    float3 temp24;
+    float temp25;
+    temp25= temp21 * temp23;
+    temp15= temp25;
+    temp13= temp14 + temp15;
+    r0.rgb= temp0;
+    r0.a= temp13;
+    // exp.components=3 term=3
+    // line 30: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp26;
+    float3 temp27;
+    temp27= saturate(r0.rgb);
+    float3 temp28;
+    float3 temp29;
+    temp29= saturate(tex0.rgb);
+    float3 temp30;
+    float3 temp31;
+    temp31= temp27 * temp29;
+    temp26= temp31;
+    temp26= 2 * temp26;
+    r0.rgb= temp26;
+    // exp.components=3 term=3 term=3
+    // line 34: T0= R0*C0 + C1
+    float3 temp32;
+    float3 temp33;
+    float3 temp34;
+    float3 temp35;
+    temp35= saturate(r0.rgb);
+    float3 temp36;
+    float3 temp37;
+    temp37= c1.rgb;
+    float3 temp38;
+    float3 temp39;
+    temp39= temp35 * temp37;
+    temp33= temp39;
+    float3 temp40;
+    temp40= c2.rgb;
+    float3 temp41;
+    temp34= temp40;
+    temp32= temp33 + temp34;
+    // exp.components=1 term=1
+    // line 35: T0a= T5a
+    float temp42;
+    float temp43;
+    temp43= saturate(tex5.a);
+    float3 temp44;
+    temp42= temp43;
+    tex0.rgb= temp32;
+    tex0.a= temp42;
+    // exp.components=1 term=1
+    // line 37: R0= EXPAND(T2).EXPAND(T3)
+    float temp45;
+    float3 temp46;
+    temp46= 2 * saturate(tex2.rgb) - 1;
+    float3 temp47;
+    float3 temp48;
+    temp48= 2 * saturate(tex3.rgb) - 1;
+    float3 temp49;
+    float temp50;
+    temp50= dot(temp46, temp48);
+    temp45= temp50;
+    // exp.components=1 term=1
+    // line 38: T2= EXPAND(T2).EXPAND(D0)
+    float temp51;
+    float3 temp52;
+    temp52= 2 * saturate(tex2.rgb) - 1;
+    float3 temp53;
+    float3 temp54;
+    temp54= 2 * saturate(color0.rgb) - 1;
+    float3 temp55;
+    float temp56;
+    temp56= dot(temp52, temp54);
+    temp51= temp56;
+    // exp.components=1 term=1
+    // line 39: R0a= EXPAND(T3b)
+    float temp57;
+    float temp58;
+    temp58= 2 * saturate(tex3.b) - 1;
+    float3 temp59;
+    temp57= temp58;
+    // exp.components=1 term=1
+    // line 40: T1a= EXPAND(D1a)*T0a
+    float temp60;
+    float temp61;
+    temp61= 2 * saturate(color1.a) - 1;
+    float3 temp62;
+    float temp63;
+    temp63= saturate(tex0.a);
+    float3 temp64;
+    float temp65;
+    temp65= temp61 * temp63;
+    temp60= temp65;
+    r0.rgb= temp45;
+    tex2.rgb= temp51;
+    r0.a= temp57;
+    tex1.a= temp60;
+    // exp.components=1 term=1
+    // line 43: R1= EXPAND(T3).EXPAND(D0)
+    float temp66;
+    float3 temp67;
+    temp67= 2 * saturate(tex3.rgb) - 1;
+    float3 temp68;
+    float3 temp69;
+    temp69= 2 * saturate(color0.rgb) - 1;
+    float3 temp70;
+    float temp71;
+    temp71= dot(temp67, temp69);
+    temp66= temp71;
+    // exp.components=1 term=1 term=1
+    // line 44: D1a= D1a*SIGNED(R0b) - D1a*SIGNED(R0a)
+    float temp72;
+    float temp73;
+    float temp74;
+    float temp75;
+    temp75= saturate(color1.a);
+    float3 temp76;
+    float temp77;
+    temp77= r0.b;
+    float3 temp78;
+    float temp79;
+    temp79= temp75 * temp77;
+    temp73= temp79;
+    float temp80;
+    temp80= saturate(color1.a);
+    float3 temp81;
+    float temp82;
+    temp82= r0.a;
+    float3 temp83;
+    float temp84;
+    temp84= temp80 * temp82;
+    temp74= temp84;
+    temp72= temp73 - temp74;
+    r1.rgb= temp66;
+    color1.a= temp72;
+    // exp.components=1 term=1 term=1
+    // line 47: R1a= OUT_SCALE_BY_2(SIGNED(R0b)*SIGNED(T2b) - 1/2*SIGNED(R1b))
+    float temp85;
+    float temp86;
+    float temp87;
+    float temp88;
+    temp88= r0.b;
+    float3 temp89;
+    float temp90;
+    temp90= tex2.b;
+    float3 temp91;
+    float temp92;
+    temp92= temp88 * temp90;
+    temp86= temp92;
+    float temp93;
+    temp93= 0.5;
+    float3 temp94;
+    float temp95;
+    temp95= r1.b;
+    float3 temp96;
+    float temp97;
+    temp97= temp93 * temp95;
+    temp87= temp97;
+    temp85= temp86 - temp87;
+    temp85= 2 * temp85;
+    r1.a= temp85;
+    // exp.components=3 term=3 term=3
+    // line 50: R0= D1 + D1*SIGNED(D1a)
+    float3 temp98;
+    float3 temp99;
+    float3 temp100;
+    float3 temp101;
+    temp101= saturate(color1.rgb);
+    float3 temp102;
+    temp99= temp101;
+    float3 temp103;
+    temp103= saturate(color1.rgb);
+    float3 temp104;
+    float temp105;
+    temp105= color1.a;
+    float3 temp106;
+    float3 temp107;
+    temp107= temp103 * temp105;
+    temp100= temp107;
+    temp98= temp99 + temp100;
+    r0.rgb= temp98;
+    // exp.components=1 term=1
+    // line 54: R1= R0.C1a
+    float temp108;
+    float3 temp109;
+    temp109= saturate(r0.rgb);
+    float3 temp110;
+    float temp111;
+    temp111= 0.752941;
+    float3 temp112;
+    float temp113;
+    temp113= dot(temp109, temp111);
+    temp108= temp113;
+    // exp.components=1 term=1
+    // line 55: D1a= R1a*R1a
+    float temp114;
+    float temp115;
+    temp115= saturate(r1.a);
+    float3 temp116;
+    float temp117;
+    temp117= saturate(r1.a);
+    float3 temp118;
+    float temp119;
+    temp119= temp115 * temp117;
+    temp114= temp119;
+    // exp.components=1 term=1
+    // line 56: T1a= C0a*T0a
+    float temp120;
+    float temp121;
+    temp121= c3.a;
+    float3 temp122;
+    float temp123;
+    temp123= saturate(tex0.a);
+    float3 temp124;
+    float temp125;
+    temp125= temp121 * temp123;
+    temp120= temp125;
+    r1.rgb= temp108;
+    color1.a= temp114;
+    tex1.a= temp120;
+    // exp.components=3 term=3
+    // line 60: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp126;
+    float3 temp127;
+    temp127= saturate(r0.rgb);
+    float3 temp128;
+    float3 temp129;
+    temp129= saturate(tex0.rgb);
+    float3 temp130;
+    float3 temp131;
+    temp131= temp127 * temp129;
+    temp126= temp131;
+    temp126= 2 * temp126;
+    // exp.components=3 term=3
+    // line 61: D1= OUT_SCALE_BY_2(C0*D1)
+    float3 temp132;
+    float3 temp133;
+    temp133= c5.rgb;
+    float3 temp134;
+    float3 temp135;
+    temp135= saturate(color1.rgb);
+    float3 temp136;
+    float3 temp137;
+    temp137= temp133 * temp135;
+    temp132= temp137;
+    temp132= 2 * temp132;
+    // exp.components=1 term=1
+    // line 62: R1a= D1a*D1a
+    float temp138;
+    float temp139;
+    temp139= saturate(color1.a);
+    float3 temp140;
+    float temp141;
+    temp141= saturate(color1.a);
+    float3 temp142;
+    float temp143;
+    temp143= temp139 * temp141;
+    temp138= temp143;
+    r0.rgb= temp126;
+    color1.rgb= temp132;
+    r1.a= temp138;
+    // exp.components=3 term=3
+    // line 71: D1= OUT_SCALE_BY_2(D1*T1a)
+    float3 temp144;
+    float3 temp145;
+    temp145= saturate(color1.rgb);
+    float3 temp146;
+    float temp147;
+    temp147= saturate(tex1.a);
+    float3 temp148;
+    float3 temp149;
+    temp149= temp145 * temp147;
+    temp144= temp149;
+    temp144= 2 * temp144;
+    // exp.components=1 term=1
+    // line 72: R1a= R1a*R1a
+    float temp150;
+    float temp151;
+    temp151= saturate(r1.a);
+    float3 temp152;
+    float temp153;
+    temp153= saturate(r1.a);
+    float3 temp154;
+    float temp155;
+    temp155= temp151 * temp153;
+    temp150= temp155;
+    color1.rgb= temp144;
+    r1.a= temp150;
+    // exp.components=3 term=3
+    // line 84: D1= OUT_SCALE_BY_2(R1a*D1)
+    float3 temp156;
+    float temp157;
+    temp157= saturate(r1.a);
+    float3 temp158;
+    float3 temp159;
+    temp159= saturate(color1.rgb);
+    float3 temp160;
+    float3 temp161;
+    temp161= temp157 * temp159;
+    temp156= temp161;
+    temp156= 2 * temp156;
+    // exp.components=1 term=1
+    // line 85: D0a= OUT_SCALE_BY_2(R1b*T0a)
+    float temp162;
+    float temp163;
+    temp163= saturate(r1.b);
+    float3 temp164;
+    float temp165;
+    temp165= saturate(tex0.a);
+    float3 temp166;
+    float temp167;
+    temp167= temp163 * temp165;
+    temp162= temp167;
+    temp162= 2 * temp162;
+    color1.rgb= temp156;
+    color0.a= temp162;
+    // exp.components=3 term=3 term=3
+    // line 88: SRCCOLOR= D1 + R0
+    float3 temp168;
+    float3 temp169;
+    float3 temp170;
+    float3 temp171;
+    temp171= saturate(color1.rgb);
+    float3 temp172;
+    temp169= temp171;
+    float3 temp173;
+    temp173= saturate(r0.rgb);
+    float3 temp174;
+    temp170= temp173;
+    temp168= temp169 + temp170;
+    // exp.components=1 term=1
+    // line 89: SRCALPHA= D0a
+    float temp175;
+    float temp176;
+    temp176= saturate(color0.a);
+    float3 temp177;
+    temp175= temp176;
+    r0.rgb= temp168;
+    r0.a= temp175;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}
+#case $lightmap_type=2
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+sampler2D s2 : register(S2);
+samplerCUBE s3 : register(S3);
+sampler2D s4 : register(S4);
+sampler2D s5 : register(S5);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 c3 : register(C3);
+float4 c4 : register(C4);
+float4 c5 : register(C5);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+#ifdef CENTROID2
+    float4 tc2 : TEXCOORD2_centroid,
+#else
+    float4 tc2 : TEXCOORD2,
+#endif
+#ifdef CENTROID3
+    float4 tc3 : TEXCOORD3_centroid,
+#else
+    float4 tc3 : TEXCOORD3,
+#endif
+#ifdef CENTROID4
+    float4 tc4 : TEXCOORD4_centroid,
+#else
+    float4 tc4 : TEXCOORD4,
+#endif
+#ifdef CENTROID5
+    float4 tc5 : TEXCOORD5_centroid,
+#else
+    float4 tc5 : TEXCOORD5,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+// texture stage 2 mode 0 dot 0 input-stage 0
+    float4 tex2= tex2Dproj(s2, tc2);
+// texture stage 3 mode 2 dot 0 input-stage 0
+    float4 tex3= texCUBE(s3, tc3);
+// texture stage 4 mode 0 dot 0 input-stage 0
+    float4 tex4= tex2Dproj(s4, tc4);
+// texture stage 5 mode 0 dot 0 input-stage 0
+    float4 tex5= tex2Dproj(s5, tc5);
+    // exp.components=3 term=3 term=3
+    // line 27: R0= INVERT(T0a)*T1 + T0a*T4
+    float3 temp0;
+    float3 temp1;
+    float3 temp2;
+    float temp3;
+    temp3= 1-saturate(tex0.a);
+    float3 temp4;
+    float3 temp5;
+    temp5= saturate(tex1.rgb);
+    float3 temp6;
+    float3 temp7;
+    temp7= temp3 * temp5;
+    temp1= temp7;
+    float temp8;
+    temp8= saturate(tex0.a);
+    float3 temp9;
+    float3 temp10;
+    temp10= saturate(tex4.rgb);
+    float3 temp11;
+    float3 temp12;
+    temp12= temp8 * temp10;
+    temp2= temp12;
+    temp0= temp1 + temp2;
+    // exp.components=1 term=1 term=1
+    // line 28: R0a= INVERT(T0a)*T1a + T0a*T4a
+    float temp13;
+    float temp14;
+    float temp15;
+    float temp16;
+    temp16= 1-saturate(tex0.a);
+    float3 temp17;
+    float temp18;
+    temp18= saturate(tex1.a);
+    float3 temp19;
+    float temp20;
+    temp20= temp16 * temp18;
+    temp14= temp20;
+    float temp21;
+    temp21= saturate(tex0.a);
+    float3 temp22;
+    float temp23;
+    temp23= saturate(tex4.a);
+    float3 temp24;
+    float temp25;
+    temp25= temp21 * temp23;
+    temp15= temp25;
+    temp13= temp14 + temp15;
+    r0.rgb= temp0;
+    r0.a= temp13;
+    // exp.components=3 term=3
+    // line 30: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp26;
+    float3 temp27;
+    temp27= saturate(r0.rgb);
+    float3 temp28;
+    float3 temp29;
+    temp29= saturate(tex0.rgb);
+    float3 temp30;
+    float3 temp31;
+    temp31= temp27 * temp29;
+    temp26= temp31;
+    temp26= 2 * temp26;
+    r0.rgb= temp26;
+    // exp.components=3 term=3 term=3
+    // line 34: T0= R0*C0 + C1
+    float3 temp32;
+    float3 temp33;
+    float3 temp34;
+    float3 temp35;
+    temp35= saturate(r0.rgb);
+    float3 temp36;
+    float3 temp37;
+    temp37= c1.rgb;
+    float3 temp38;
+    float3 temp39;
+    temp39= temp35 * temp37;
+    temp33= temp39;
+    float3 temp40;
+    temp40= c2.rgb;
+    float3 temp41;
+    temp34= temp40;
+    temp32= temp33 + temp34;
+    // exp.components=1 term=1
+    // line 35: T0a= T5a
+    float temp42;
+    float temp43;
+    temp43= saturate(tex5.a);
+    float3 temp44;
+    temp42= temp43;
+    tex0.rgb= temp32;
+    tex0.a= temp42;
+    // exp.components=1 term=1
+    // line 37: R0= EXPAND(T2).EXPAND(T3)
+    float temp45;
+    float3 temp46;
+    temp46= 2 * saturate(tex2.rgb) - 1;
+    float3 temp47;
+    float3 temp48;
+    temp48= 2 * saturate(tex3.rgb) - 1;
+    float3 temp49;
+    float temp50;
+    temp50= dot(temp46, temp48);
+    temp45= temp50;
+    // exp.components=1 term=1
+    // line 38: T2= EXPAND(T2).EXPAND(D0)
+    float temp51;
+    float3 temp52;
+    temp52= 2 * saturate(tex2.rgb) - 1;
+    float3 temp53;
+    float3 temp54;
+    temp54= 2 * saturate(color0.rgb) - 1;
+    float3 temp55;
+    float temp56;
+    temp56= dot(temp52, temp54);
+    temp51= temp56;
+    // exp.components=1 term=1
+    // line 39: R0a= EXPAND(T3b)
+    float temp57;
+    float temp58;
+    temp58= 2 * saturate(tex3.b) - 1;
+    float3 temp59;
+    temp57= temp58;
+    // exp.components=1 term=1
+    // line 40: T1a= EXPAND(D1a)*T0a
+    float temp60;
+    float temp61;
+    temp61= 2 * saturate(color1.a) - 1;
+    float3 temp62;
+    float temp63;
+    temp63= saturate(tex0.a);
+    float3 temp64;
+    float temp65;
+    temp65= temp61 * temp63;
+    temp60= temp65;
+    r0.rgb= temp45;
+    tex2.rgb= temp51;
+    r0.a= temp57;
+    tex1.a= temp60;
+    // exp.components=1 term=1
+    // line 43: R1= EXPAND(T3).EXPAND(D0)
+    float temp66;
+    float3 temp67;
+    temp67= 2 * saturate(tex3.rgb) - 1;
+    float3 temp68;
+    float3 temp69;
+    temp69= 2 * saturate(color0.rgb) - 1;
+    float3 temp70;
+    float temp71;
+    temp71= dot(temp67, temp69);
+    temp66= temp71;
+    // exp.components=1 term=1 term=1
+    // line 44: D1a= D1a*SIGNED(R0b) - D1a*SIGNED(R0a)
+    float temp72;
+    float temp73;
+    float temp74;
+    float temp75;
+    temp75= saturate(color1.a);
+    float3 temp76;
+    float temp77;
+    temp77= r0.b;
+    float3 temp78;
+    float temp79;
+    temp79= temp75 * temp77;
+    temp73= temp79;
+    float temp80;
+    temp80= saturate(color1.a);
+    float3 temp81;
+    float temp82;
+    temp82= r0.a;
+    float3 temp83;
+    float temp84;
+    temp84= temp80 * temp82;
+    temp74= temp84;
+    temp72= temp73 - temp74;
+    r1.rgb= temp66;
+    color1.a= temp72;
+    // exp.components=1 term=1 term=1
+    // line 47: R1a= OUT_SCALE_BY_2(SIGNED(R0b)*SIGNED(T2b) - 1/2*SIGNED(R1b))
+    float temp85;
+    float temp86;
+    float temp87;
+    float temp88;
+    temp88= r0.b;
+    float3 temp89;
+    float temp90;
+    temp90= tex2.b;
+    float3 temp91;
+    float temp92;
+    temp92= temp88 * temp90;
+    temp86= temp92;
+    float temp93;
+    temp93= 0.5;
+    float3 temp94;
+    float temp95;
+    temp95= r1.b;
+    float3 temp96;
+    float temp97;
+    temp97= temp93 * temp95;
+    temp87= temp97;
+    temp85= temp86 - temp87;
+    temp85= 2 * temp85;
+    r1.a= temp85;
+    // exp.components=3 term=3 term=3
+    // line 50: R0= D1 + D1*SIGNED(D1a)
+    float3 temp98;
+    float3 temp99;
+    float3 temp100;
+    float3 temp101;
+    temp101= saturate(color1.rgb);
+    float3 temp102;
+    temp99= temp101;
+    float3 temp103;
+    temp103= saturate(color1.rgb);
+    float3 temp104;
+    float temp105;
+    temp105= color1.a;
+    float3 temp106;
+    float3 temp107;
+    temp107= temp103 * temp105;
+    temp100= temp107;
+    temp98= temp99 + temp100;
+    r0.rgb= temp98;
+    // exp.components=1 term=1
+    // line 54: R1= R0.C1a
+    float temp108;
+    float3 temp109;
+    temp109= saturate(r0.rgb);
+    float3 temp110;
+    float temp111;
+    temp111= 0.752941;
+    float3 temp112;
+    float temp113;
+    temp113= dot(temp109, temp111);
+    temp108= temp113;
+    // exp.components=1 term=1
+    // line 55: D1a= R1a*R1a
+    float temp114;
+    float temp115;
+    temp115= saturate(r1.a);
+    float3 temp116;
+    float temp117;
+    temp117= saturate(r1.a);
+    float3 temp118;
+    float temp119;
+    temp119= temp115 * temp117;
+    temp114= temp119;
+    // exp.components=1 term=1
+    // line 56: T1a= C0a*T0a
+    float temp120;
+    float temp121;
+    temp121= c3.a;
+    float3 temp122;
+    float temp123;
+    temp123= saturate(tex0.a);
+    float3 temp124;
+    float temp125;
+    temp125= temp121 * temp123;
+    temp120= temp125;
+    r1.rgb= temp108;
+    color1.a= temp114;
+    tex1.a= temp120;
+    // exp.components=3 term=3
+    // line 60: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp126;
+    float3 temp127;
+    temp127= saturate(r0.rgb);
+    float3 temp128;
+    float3 temp129;
+    temp129= saturate(tex0.rgb);
+    float3 temp130;
+    float3 temp131;
+    temp131= temp127 * temp129;
+    temp126= temp131;
+    temp126= 2 * temp126;
+    // exp.components=3 term=3
+    // line 61: D1= OUT_SCALE_BY_2(C0*D1)
+    float3 temp132;
+    float3 temp133;
+    temp133= c5.rgb;
+    float3 temp134;
+    float3 temp135;
+    temp135= saturate(color1.rgb);
+    float3 temp136;
+    float3 temp137;
+    temp137= temp133 * temp135;
+    temp132= temp137;
+    temp132= 2 * temp132;
+    // exp.components=1 term=1
+    // line 62: R1a= D1a*D1a
+    float temp138;
+    float temp139;
+    temp139= saturate(color1.a);
+    float3 temp140;
+    float temp141;
+    temp141= saturate(color1.a);
+    float3 temp142;
+    float temp143;
+    temp143= temp139 * temp141;
+    temp138= temp143;
+    r0.rgb= temp126;
+    color1.rgb= temp132;
+    r1.a= temp138;
+    // exp.components=3 term=3
+    // line 75: D1= OUT_SCALE_BY_2(D1*T1a)
+    float3 temp144;
+    float3 temp145;
+    temp145= saturate(color1.rgb);
+    float3 temp146;
+    float temp147;
+    temp147= saturate(tex1.a);
+    float3 temp148;
+    float3 temp149;
+    temp149= temp145 * temp147;
+    temp144= temp149;
+    temp144= 2 * temp144;
+    // exp.components=1 term=1
+    // line 76: R1a= D1a
+    float temp150;
+    float temp151;
+    temp151= saturate(color1.a);
+    float3 temp152;
+    temp150= temp151;
+    color1.rgb= temp144;
+    r1.a= temp150;
+    // exp.components=3 term=3
+    // line 84: D1= OUT_SCALE_BY_2(R1a*D1)
+    float3 temp153;
+    float temp154;
+    temp154= saturate(r1.a);
+    float3 temp155;
+    float3 temp156;
+    temp156= saturate(color1.rgb);
+    float3 temp157;
+    float3 temp158;
+    temp158= temp154 * temp156;
+    temp153= temp158;
+    temp153= 2 * temp153;
+    // exp.components=1 term=1
+    // line 85: D0a= OUT_SCALE_BY_2(R1b*T0a)
+    float temp159;
+    float temp160;
+    temp160= saturate(r1.b);
+    float3 temp161;
+    float temp162;
+    temp162= saturate(tex0.a);
+    float3 temp163;
+    float temp164;
+    temp164= temp160 * temp162;
+    temp159= temp164;
+    temp159= 2 * temp159;
+    color1.rgb= temp153;
+    color0.a= temp159;
+    // exp.components=3 term=3 term=3
+    // line 88: SRCCOLOR= D1 + R0
+    float3 temp165;
+    float3 temp166;
+    float3 temp167;
+    float3 temp168;
+    temp168= saturate(color1.rgb);
+    float3 temp169;
+    temp166= temp168;
+    float3 temp170;
+    temp170= saturate(r0.rgb);
+    float3 temp171;
+    temp167= temp170;
+    temp165= temp166 + temp167;
+    // exp.components=1 term=1
+    // line 89: SRCALPHA= D0a
+    float temp172;
+    float temp173;
+    temp173= saturate(color0.a);
+    float3 temp174;
+    temp172= temp173;
+    r0.rgb= temp165;
+    r0.a= temp172;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}
+#case $lightmap_type=3
+sampler2D s0 : register(S0);
+sampler2D s1 : register(S1);
+sampler2D s2 : register(S2);
+samplerCUBE s3 : register(S3);
+sampler2D s4 : register(S4);
+sampler2D s5 : register(S5);
+float4 bumpenv : register(C0);    // .r=m00 .g=m01 .b=m10 .a=m11
+float4 c1 : register(C1);
+float4 c2 : register(C2);
+float4 c3 : register(C3);
+float4 c4 : register(C4);
+float4 c5 : register(C5);
+float4 zwriteout : register(c16);
+struct MRT_return
+{
+    float4 color :COLOR0;
+    float4 depth :COLOR1;
+};
+#ifndef MRT
+float4 main(
+#else
+MRT_return main(
+#endif
+#ifdef CENTROID0
+    float4 tc0 : TEXCOORD0_centroid,
+#else
+    float4 tc0 : TEXCOORD0,
+#endif
+#ifdef CENTROID1
+    float4 tc1 : TEXCOORD1_centroid,
+#else
+    float4 tc1 : TEXCOORD1,
+#endif
+#ifdef CENTROID2
+    float4 tc2 : TEXCOORD2_centroid,
+#else
+    float4 tc2 : TEXCOORD2,
+#endif
+#ifdef CENTROID3
+    float4 tc3 : TEXCOORD3_centroid,
+#else
+    float4 tc3 : TEXCOORD3,
+#endif
+#ifdef CENTROID4
+    float4 tc4 : TEXCOORD4_centroid,
+#else
+    float4 tc4 : TEXCOORD4,
+#endif
+#ifdef CENTROID5
+    float4 tc5 : TEXCOORD5_centroid,
+#else
+    float4 tc5 : TEXCOORD5,
+#endif
+    float4 tc7:TEXCOORD7,
+    float4 color0 : COLOR0,
+    float4 color1 : COLOR1
+)
+#ifndef MRT
+    : COLOR
+#endif
+{
+    float4 r0, r1;
+    float3 e, f;
+    r0.r= r0.g= r0.b= 0;
+    r0.a= 1;
+    float4 tex6;
+    float4 tex7;
+// texture stage 0 mode 0 dot 0 input-stage 0
+    float4 tex0= tex2Dproj(s0, tc0);
+// texture stage 1 mode 0 dot 0 input-stage 0
+    float4 tex1= tex2Dproj(s1, tc1);
+// texture stage 2 mode 0 dot 0 input-stage 0
+    float4 tex2= tex2Dproj(s2, tc2);
+// texture stage 3 mode 2 dot 0 input-stage 0
+    float4 tex3= texCUBE(s3, tc3);
+// texture stage 4 mode 0 dot 0 input-stage 0
+    float4 tex4= tex2Dproj(s4, tc4);
+// texture stage 5 mode 0 dot 0 input-stage 0
+    float4 tex5= tex2Dproj(s5, tc5);
+    // exp.components=3 term=3 term=3
+    // line 27: R0= INVERT(T0a)*T1 + T0a*T4
+    float3 temp0;
+    float3 temp1;
+    float3 temp2;
+    float temp3;
+    temp3= 1-saturate(tex0.a);
+    float3 temp4;
+    float3 temp5;
+    temp5= saturate(tex1.rgb);
+    float3 temp6;
+    float3 temp7;
+    temp7= temp3 * temp5;
+    temp1= temp7;
+    float temp8;
+    temp8= saturate(tex0.a);
+    float3 temp9;
+    float3 temp10;
+    temp10= saturate(tex4.rgb);
+    float3 temp11;
+    float3 temp12;
+    temp12= temp8 * temp10;
+    temp2= temp12;
+    temp0= temp1 + temp2;
+    // exp.components=1 term=1 term=1
+    // line 28: R0a= INVERT(T0a)*T1a + T0a*T4a
+    float temp13;
+    float temp14;
+    float temp15;
+    float temp16;
+    temp16= 1-saturate(tex0.a);
+    float3 temp17;
+    float temp18;
+    temp18= saturate(tex1.a);
+    float3 temp19;
+    float temp20;
+    temp20= temp16 * temp18;
+    temp14= temp20;
+    float temp21;
+    temp21= saturate(tex0.a);
+    float3 temp22;
+    float temp23;
+    temp23= saturate(tex4.a);
+    float3 temp24;
+    float temp25;
+    temp25= temp21 * temp23;
+    temp15= temp25;
+    temp13= temp14 + temp15;
+    r0.rgb= temp0;
+    r0.a= temp13;
+    // exp.components=3 term=3
+    // line 30: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp26;
+    float3 temp27;
+    temp27= saturate(r0.rgb);
+    float3 temp28;
+    float3 temp29;
+    temp29= saturate(tex0.rgb);
+    float3 temp30;
+    float3 temp31;
+    temp31= temp27 * temp29;
+    temp26= temp31;
+    temp26= 2 * temp26;
+    r0.rgb= temp26;
+    // exp.components=3 term=3 term=3
+    // line 34: T0= R0*C0 + C1
+    float3 temp32;
+    float3 temp33;
+    float3 temp34;
+    float3 temp35;
+    temp35= saturate(r0.rgb);
+    float3 temp36;
+    float3 temp37;
+    temp37= c1.rgb;
+    float3 temp38;
+    float3 temp39;
+    temp39= temp35 * temp37;
+    temp33= temp39;
+    float3 temp40;
+    temp40= c2.rgb;
+    float3 temp41;
+    temp34= temp40;
+    temp32= temp33 + temp34;
+    // exp.components=1 term=1
+    // line 35: T0a= T5a
+    float temp42;
+    float temp43;
+    temp43= saturate(tex5.a);
+    float3 temp44;
+    temp42= temp43;
+    tex0.rgb= temp32;
+    tex0.a= temp42;
+    // exp.components=1 term=1
+    // line 37: R0= EXPAND(T2).EXPAND(T3)
+    float temp45;
+    float3 temp46;
+    temp46= 2 * saturate(tex2.rgb) - 1;
+    float3 temp47;
+    float3 temp48;
+    temp48= 2 * saturate(tex3.rgb) - 1;
+    float3 temp49;
+    float temp50;
+    temp50= dot(temp46, temp48);
+    temp45= temp50;
+    // exp.components=1 term=1
+    // line 38: T2= EXPAND(T2).EXPAND(D0)
+    float temp51;
+    float3 temp52;
+    temp52= 2 * saturate(tex2.rgb) - 1;
+    float3 temp53;
+    float3 temp54;
+    temp54= 2 * saturate(color0.rgb) - 1;
+    float3 temp55;
+    float temp56;
+    temp56= dot(temp52, temp54);
+    temp51= temp56;
+    // exp.components=1 term=1
+    // line 39: R0a= EXPAND(T3b)
+    float temp57;
+    float temp58;
+    temp58= 2 * saturate(tex3.b) - 1;
+    float3 temp59;
+    temp57= temp58;
+    // exp.components=1 term=1
+    // line 40: T1a= EXPAND(D1a)*T0a
+    float temp60;
+    float temp61;
+    temp61= 2 * saturate(color1.a) - 1;
+    float3 temp62;
+    float temp63;
+    temp63= saturate(tex0.a);
+    float3 temp64;
+    float temp65;
+    temp65= temp61 * temp63;
+    temp60= temp65;
+    r0.rgb= temp45;
+    tex2.rgb= temp51;
+    r0.a= temp57;
+    tex1.a= temp60;
+    // exp.components=1 term=1
+    // line 43: R1= EXPAND(T3).EXPAND(D0)
+    float temp66;
+    float3 temp67;
+    temp67= 2 * saturate(tex3.rgb) - 1;
+    float3 temp68;
+    float3 temp69;
+    temp69= 2 * saturate(color0.rgb) - 1;
+    float3 temp70;
+    float temp71;
+    temp71= dot(temp67, temp69);
+    temp66= temp71;
+    // exp.components=1 term=1 term=1
+    // line 44: D1a= D1a*SIGNED(R0b) - D1a*SIGNED(R0a)
+    float temp72;
+    float temp73;
+    float temp74;
+    float temp75;
+    temp75= saturate(color1.a);
+    float3 temp76;
+    float temp77;
+    temp77= r0.b;
+    float3 temp78;
+    float temp79;
+    temp79= temp75 * temp77;
+    temp73= temp79;
+    float temp80;
+    temp80= saturate(color1.a);
+    float3 temp81;
+    float temp82;
+    temp82= r0.a;
+    float3 temp83;
+    float temp84;
+    temp84= temp80 * temp82;
+    temp74= temp84;
+    temp72= temp73 - temp74;
+    r1.rgb= temp66;
+    color1.a= temp72;
+    // exp.components=1 term=1 term=1
+    // line 47: R1a= OUT_SCALE_BY_2(SIGNED(R0b)*SIGNED(T2b) - 1/2*SIGNED(R1b))
+    float temp85;
+    float temp86;
+    float temp87;
+    float temp88;
+    temp88= r0.b;
+    float3 temp89;
+    float temp90;
+    temp90= tex2.b;
+    float3 temp91;
+    float temp92;
+    temp92= temp88 * temp90;
+    temp86= temp92;
+    float temp93;
+    temp93= 0.5;
+    float3 temp94;
+    float temp95;
+    temp95= r1.b;
+    float3 temp96;
+    float temp97;
+    temp97= temp93 * temp95;
+    temp87= temp97;
+    temp85= temp86 - temp87;
+    temp85= 2 * temp85;
+    r1.a= temp85;
+    // exp.components=3 term=3 term=3
+    // line 50: R0= D1 + D1*SIGNED(D1a)
+    float3 temp98;
+    float3 temp99;
+    float3 temp100;
+    float3 temp101;
+    temp101= saturate(color1.rgb);
+    float3 temp102;
+    temp99= temp101;
+    float3 temp103;
+    temp103= saturate(color1.rgb);
+    float3 temp104;
+    float temp105;
+    temp105= color1.a;
+    float3 temp106;
+    float3 temp107;
+    temp107= temp103 * temp105;
+    temp100= temp107;
+    temp98= temp99 + temp100;
+    r0.rgb= temp98;
+    // exp.components=1 term=1
+    // line 54: R1= R0.C1a
+    float temp108;
+    float3 temp109;
+    temp109= saturate(r0.rgb);
+    float3 temp110;
+    float temp111;
+    temp111= 0.752941;
+    float3 temp112;
+    float temp113;
+    temp113= dot(temp109, temp111);
+    temp108= temp113;
+    // exp.components=1 term=1
+    // line 55: D1a= R1a*R1a
+    float temp114;
+    float temp115;
+    temp115= saturate(r1.a);
+    float3 temp116;
+    float temp117;
+    temp117= saturate(r1.a);
+    float3 temp118;
+    float temp119;
+    temp119= temp115 * temp117;
+    temp114= temp119;
+    // exp.components=1 term=1
+    // line 56: T1a= C0a*T0a
+    float temp120;
+    float temp121;
+    temp121= c3.a;
+    float3 temp122;
+    float temp123;
+    temp123= saturate(tex0.a);
+    float3 temp124;
+    float temp125;
+    temp125= temp121 * temp123;
+    temp120= temp125;
+    r1.rgb= temp108;
+    color1.a= temp114;
+    tex1.a= temp120;
+    // exp.components=3 term=3
+    // line 60: R0= OUT_SCALE_BY_2(R0*T0)
+    float3 temp126;
+    float3 temp127;
+    temp127= saturate(r0.rgb);
+    float3 temp128;
+    float3 temp129;
+    temp129= saturate(tex0.rgb);
+    float3 temp130;
+    float3 temp131;
+    temp131= temp127 * temp129;
+    temp126= temp131;
+    temp126= 2 * temp126;
+    // exp.components=3 term=3
+    // line 61: D1= OUT_SCALE_BY_2(C0*D1)
+    float3 temp132;
+    float3 temp133;
+    temp133= c5.rgb;
+    float3 temp134;
+    float3 temp135;
+    temp135= saturate(color1.rgb);
+    float3 temp136;
+    float3 temp137;
+    temp137= temp133 * temp135;
+    temp132= temp137;
+    temp132= 2 * temp132;
+    // exp.components=1 term=1
+    // line 62: R1a= D1a*D1a
+    float temp138;
+    float temp139;
+    temp139= saturate(color1.a);
+    float3 temp140;
+    float temp141;
+    temp141= saturate(color1.a);
+    float3 temp142;
+    float temp143;
+    temp143= temp139 * temp141;
+    temp138= temp143;
+    r0.rgb= temp126;
+    color1.rgb= temp132;
+    r1.a= temp138;
+    // exp.components=3 term=3
+    // line 79: D1= OUT_SCALE_BY_2(D1*T1a)
+    float3 temp144;
+    float3 temp145;
+    temp145= saturate(color1.rgb);
+    float3 temp146;
+    float temp147;
+    temp147= saturate(tex1.a);
+    float3 temp148;
+    float3 temp149;
+    temp149= temp145 * temp147;
+    temp144= temp149;
+    temp144= 2 * temp144;
+    // exp.components=1 term=1 term=1
+    // line 80: R1a= OUT_SCALE_BY_2(R1a*R1a - 1/2)
+    float temp150;
+    float temp151;
+    float temp152;
+    float temp153;
+    temp153= saturate(r1.a);
+    float3 temp154;
+    float temp155;
+    temp155= saturate(r1.a);
+    float3 temp156;
+    float temp157;
+    temp157= temp153 * temp155;
+    temp151= temp157;
+    float temp158;
+    temp158= 0.5;
+    float3 temp159;
+    temp152= temp158;
+    temp150= temp151 - temp152;
+    temp150= 2 * temp150;
+    color1.rgb= temp144;
+    r1.a= temp150;
+    // exp.components=3 term=3
+    // line 84: D1= OUT_SCALE_BY_2(R1a*D1)
+    float3 temp160;
+    float temp161;
+    temp161= saturate(r1.a);
+    float3 temp162;
+    float3 temp163;
+    temp163= saturate(color1.rgb);
+    float3 temp164;
+    float3 temp165;
+    temp165= temp161 * temp163;
+    temp160= temp165;
+    temp160= 2 * temp160;
+    // exp.components=1 term=1
+    // line 85: D0a= OUT_SCALE_BY_2(R1b*T0a)
+    float temp166;
+    float temp167;
+    temp167= saturate(r1.b);
+    float3 temp168;
+    float temp169;
+    temp169= saturate(tex0.a);
+    float3 temp170;
+    float temp171;
+    temp171= temp167 * temp169;
+    temp166= temp171;
+    temp166= 2 * temp166;
+    color1.rgb= temp160;
+    color0.a= temp166;
+    // exp.components=3 term=3 term=3
+    // line 88: SRCCOLOR= D1 + R0
+    float3 temp172;
+    float3 temp173;
+    float3 temp174;
+    float3 temp175;
+    temp175= saturate(color1.rgb);
+    float3 temp176;
+    temp173= temp175;
+    float3 temp177;
+    temp177= saturate(r0.rgb);
+    float3 temp178;
+    temp174= temp177;
+    temp172= temp173 + temp174;
+    // exp.components=1 term=1
+    // line 89: SRCALPHA= D0a
+    float temp179;
+    float temp180;
+    temp180= saturate(color0.a);
+    float3 temp181;
+    temp179= temp180;
+    r0.rgb= temp172;
+    r0.a= temp179;
+
+//fog zvalue
+    float linear_depth = tc7.w / zwriteout.z;
+    float3 depth_stripe;
+
+    depth_stripe.r = floor(linear_depth*256)/256;
+    depth_stripe.g = frac(floor(linear_depth*65536)/256);
+    depth_stripe.b = frac(floor(linear_depth*65536*256)/256);
+
+#ifdef ZPRIME
+    //r0.a has alpha kill value
+    r0.rgb = depth_stripe.rgb;
+#endif
+
+#ifndef MRT
+    return r0;
+#else
+    MRT_return retval;
+    retval.color = r0;
+    retval.depth.rgb = depth_stripe.rgb;
+    retval.depth.a = r0.a;
+    return retval;
+#endif
+}
