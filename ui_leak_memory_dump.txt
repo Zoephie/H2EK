@@ -1,0 +1,8 @@
+MEMORY POOL DUMP FOR 'ui_leak'
+=========================
+
+
+pool 'ui memory pool' size 2072576 free 2072576
+
+
+0 blocks 0 bytes (min/avg/max 2147483647/0/0)
