@@ -1,6 +1,3 @@
-*.7z
-*.rar
-*.zip
 /reports/*
 shader_cache/*
 /tags/temp_scenario/*
